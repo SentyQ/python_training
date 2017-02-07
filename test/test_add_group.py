@@ -12,7 +12,7 @@ def app(request):
     return fixture
 
 def test_test_add_group(app):
-        app.login(username="admin", password="secret")
-        app.create_group(Group(name="New", header="sgsdaga", footer="sdfgfgh"))
-        app.logout()
+        app.session.login(username="admin", password="secret")
+        app.group.create(Group(name="New", header="sgsdaga", footer="sdfgfgh"))
+        app.session.logout()
 
