@@ -27,16 +27,20 @@ class ContactHelper:
 
     def modify_first_contact(self, contact):
         wd = self.app.wd
-        wd.find_element_by_link_text("home").click()
+        self.open_home_page()
         self.select_first_contact()
         wd.find_element_by_xpath("//table[@id='maintable']/tbody/tr[2]/td[8]/a/img").click()
         self.fill_contact_form(contact)
         wd.find_element_by_name("update").click()
+        self.open_home_page()
+
+    def open_home_page(self):
+        wd = self.app.wd
         wd.find_element_by_link_text("home").click()
 
     def delete_first_contact(self):
         wd = self.app.wd
-        wd.find_element_by_link_text("home").click()
+        self.open_home_page()
         self.select_first_contact()
         wd.find_element_by_xpath("//div[@id='content']/form[2]/div[2]/input").click()
         wd.switch_to_alert().accept()
@@ -49,3 +53,8 @@ class ContactHelper:
     def open_contact_add_page(self):
         wd = self.app.wd
         wd.find_element_by_link_text("add new").click()
+
+    def count(self):
+        wd = self.app.wd
+        self.open_home_page()
+        return len(wd.find_elements_by_name("selected[]"))
