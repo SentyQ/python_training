@@ -7,7 +7,7 @@ class Contact:
         self. MiddleName = MiddleName
         self.LastName = LastName
         self.Year = Year
-        if name == None:
+        if name is None:
             self.name = self.get_name()
         else:
             self.name = name
