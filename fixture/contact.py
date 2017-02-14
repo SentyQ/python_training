@@ -29,14 +29,22 @@ class ContactHelper:
             wd.find_element_by_name(field_name).send_keys(text)
 
     def modify_first_contact(self, contact):
+        self.modify_contact_by_index(0,contact)
+
+
+    def modify_contact_by_index(self, index, contact):
         wd = self.app.wd
         self.open_home_page()
-        self.select_first_contact()
-        wd.find_element_by_xpath("//table[@id='maintable']/tbody/tr[2]/td[8]/a/img").click()
+        wd.get("http://localhost/addressbook/edit.php?id="+str(self.get_contact_id(index)))
+        #wd.find_element_by_xpath("//table[@id='maintable']/tbody/tr[2]/td[8]/a/img").click()
         self.fill_contact_form(contact)
         wd.find_element_by_name("update").click()
         self.open_home_page()
         self.contact_cache = None
+
+    def get_contact_id(self, index):
+        wd = self.app.wd
+        return wd.find_elements_by_name("selected[]")[index].get_attribute("value")
 
     def open_home_page(self):
         wd = self.app.wd
@@ -44,17 +52,24 @@ class ContactHelper:
             wd.find_element_by_link_text("home").click()
 
     def delete_first_contact(self):
+        self.delete_contact_by_index(0)
+
+
+    def delete_contact_by_index(self, index):
         wd = self.app.wd
         self.open_home_page()
-        self.select_first_contact()
+        self.select_contact_by_index(index)
         wd.find_element_by_xpath("//div[@id='content']/form[2]/div[2]/input").click()
         wd.switch_to_alert().accept()
         wd.find_element_by_link_text("home").click()
         self.contact_cache = None
 
     def select_first_contact(self):
+        self.select_contact_by_index(0)
+
+    def select_contact_by_index(self, index):
         wd = self.app.wd
-        wd.find_element_by_name("selected[]").click()
+        wd.find_elements_by_name("selected[]")[index].click()
 
     def open_contact_add_page(self):
         wd = self.app.wd
