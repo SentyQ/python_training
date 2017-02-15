@@ -11,6 +11,7 @@ class ContactHelper:
         self.open_contact_add_page()
         self.fill_contact_form(contact)
         wd.find_element_by_name("submit").click()
+        self.open_home_page()
         self.contact_cache = None
 
     def fill_contact_form(self, contact):
@@ -18,6 +19,10 @@ class ContactHelper:
         self.change_field_value("firstname", contact.FirstName)
         self.change_field_value("middlename", contact.MiddleName)
         self.change_field_value("lastname", contact.LastName)
+        self.change_field_value("home", contact.HomePhone)
+        self.change_field_value("mobile", contact.MobilePhone)
+        self.change_field_value("work", contact.WorkPhone)
+        self.change_field_value("phone2", contact.SecondaryPhone)
         self.change_field_value("byear", contact.Year)
 
 
@@ -35,13 +40,24 @@ class ContactHelper:
     def modify_contact_by_index(self, index, contact):
         wd = self.app.wd
         self.open_home_page()
-        wd.get("http://localhost/addressbook/edit.php?id="+str(self.get_contact_id(index)))
-        #linktext = 'href="edit.php?id='+str(self.get_contact_id(index))+'"'
-        #wd.find_element_by_name("href").click()
+        self.open_contact_to_edit_by_index(index)
         self.fill_contact_form(contact)
         wd.find_element_by_name("update").click()
         self.open_home_page()
         self.contact_cache = None
+
+    def open_contact_to_edit_by_index(self, index):
+        wd = self.app.wd
+        row = wd.find_elements_by_name("entry")[index]
+        cell = row.find_elements_by_css_selector("td")[7]
+        cell.find_element_by_css_selector("a").click()
+
+    def open_contact_view_by_index(self, index):
+        wd = self.app.wd
+        self.open_home_page()
+        row = wd.find_elements_by_name("entry")[index]
+        cell = row.find_elements_by_css_selector("td.center")[1]
+        cell.find_element_by_css_selector("a").click()
 
     def get_contact_id(self, index):
         wd = self.app.wd
@@ -62,7 +78,7 @@ class ContactHelper:
         self.select_contact_by_index(index)
         wd.find_element_by_xpath("//div[@id='content']/form[2]/div[2]/input").click()
         wd.switch_to_alert().accept()
-        wd.find_element_by_link_text("home").click()
+        self.open_home_page()
         self.contact_cache = None
 
     def select_first_contact(self):
@@ -89,8 +105,23 @@ class ContactHelper:
             self.open_home_page()
             self.contact_cache = []
             for element in wd.find_elements_by_name("entry"):
-                lastname = element.find_elements_by_css_selector("td")[1].text
-                firstname = element.find_elements_by_css_selector("td")[2].text
-                id = element.find_element_by_name("selected[]").get_attribute("value")
+                cells = element.find_elements_by_tag_name("td")
+                lastname = cells[1].text
+                firstname = cells[2].text
+                id = cells[0].find_element_by_tag_name("input").get_attribute("value")
+                #all_phones = cells[5].text.splitlines()
                 self.contact_cache.append(Contact(LastName=lastname, FirstName=firstname, id=id))
         return list(self.contact_cache)
+
+    def get_contact_info_from_edit_page(self, index):
+        wd = self.app.wd
+        self.open_contact_to_edit_by_index(index)
+        firstname = wd.find_element_by_name("firstname").get_attribute("value")
+        lastname = wd.find_element_by_name("lastname").get_attribute("value")
+        id = wd.find_element_by_name("id").get_attribute("value")
+        homephone = wd.find_element_by_name("home").get_attribute("value")
+        mobilephone = wd.find_element_by_name("mobile").get_attribute("value")
+        workphone = wd.find_element_by_name("work").get_attribute("value")
+        secondaryphone = wd.find_element_by_name("phone2").get_attribute("value")
+        return Contact(FirstName=firstname, LastName=lastname, id=id, HomePhone=homephone, MobilePhone=mobilephone,
+                       WorkPhone=workphone, SecondaryPhone=secondaryphone)
