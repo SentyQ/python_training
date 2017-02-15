@@ -36,7 +36,8 @@ class ContactHelper:
         wd = self.app.wd
         self.open_home_page()
         wd.get("http://localhost/addressbook/edit.php?id="+str(self.get_contact_id(index)))
-        #wd.find_element_by_xpath("//table[@id='maintable']/tbody/tr[2]/td[8]/a/img").click()
+        #linktext = 'href="edit.php?id='+str(self.get_contact_id(index))+'"'
+        #wd.find_element_by_name("href").click()
         self.fill_contact_form(contact)
         wd.find_element_by_name("update").click()
         self.open_home_page()
@@ -88,7 +89,8 @@ class ContactHelper:
             self.open_home_page()
             self.contact_cache = []
             for element in wd.find_elements_by_name("entry"):
-                text = element.text
+                lastname = element.find_elements_by_css_selector("td")[1].text
+                firstname = element.find_elements_by_css_selector("td")[2].text
                 id = element.find_element_by_name("selected[]").get_attribute("value")
-                self.contact_cache.append(Contact(name=text, id=id))
+                self.contact_cache.append(Contact(LastName=lastname, FirstName=firstname, id=id))
         return list(self.contact_cache)
