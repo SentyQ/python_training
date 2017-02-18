@@ -1,12 +1,26 @@
 # -*- coding: utf-8 -*-
 
 from model.contact import Contact
+import pytest
+import random
+import string
+
+def random_string(prefix,maxlen):
+        symbols = string.ascii_letters + string.digits + string.punctuation + " "*10
+        return prefix + "".join([random.choice(symbols) for i in range (random.randrange(maxlen))])
 
 
-    
-def test_add_contact(app):
+testdata = [Contact(FirstName="", MiddleName="", LastName="")] + [
+        Contact(FirstName=random_string("name",10), MiddleName=random_string("header",20),
+                LastName=random_string("footer",20))
+        for i in range (5)
+
+]
+
+
+@pytest.mark.parametrize("contact",testdata, ids=[repr(x) for x in testdata])
+def test_add_contact(app, contact):
     old_contacts = app.contact.get_contact_list()
-    contact = Contact(FirstName="NewOne", MiddleName="J", LastName="Person", Year="1899")
     app.contact.create(contact)
     assert len(old_contacts) + 1 == app.contact.count()
     new_contacts = app.contact.get_contact_list()

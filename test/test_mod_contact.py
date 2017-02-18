@@ -1,15 +1,29 @@
 # -*- coding: utf-8 -*-
 
 from model.contact import Contact
-from random import randrange
+import pytest
+import random
+import string
 
-def test_modify_some_contact(app):
+def random_string(prefix,maxlen):
+        symbols = string.ascii_letters + string.digits + string.punctuation + " "*10
+        return prefix + "".join([random.choice(symbols) for i in range (random.randrange(maxlen))])
+
+
+testdata = [Contact(FirstName="", MiddleName="", LastName="")] + [
+        Contact(FirstName=random_string("name",10), MiddleName=random_string("header",20),
+                LastName=random_string("footer",20))
+        for i in range (5)
+
+]
+
+
+@pytest.mark.parametrize("contact",testdata, ids=[repr(x) for x in testdata])
+def test_modify_some_contact(app, contact):
         if app.contact.count() == 0:
                 app.contact.create(Contact(FirstName="test"))
         old_contacts = app.contact.get_contact_list()
-        index = randrange(len(old_contacts))
-        contact = Contact(FirstName="OtherOne", MiddleName="JK", LastName="FSbnfs", SecondaryPhone='2463467',
-                          Year="1999")
+        index = random.randrange(len(old_contacts))
         contact.id = old_contacts[index].id
         contact.HomePhone = old_contacts[index].HomePhone
         contact.WorkPhone = old_contacts[index].WorkPhone
