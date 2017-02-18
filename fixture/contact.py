@@ -110,9 +110,7 @@ class ContactHelper:
                 lastname = cells[1].text
                 firstname = cells[2].text
                 address = cells[3].text
-                email_from_home_page = ''
-                for emails in cells[4].find_elements_by_tag_name("a"):
-                    email_from_home_page = email_from_home_page + '\n' +  emails.text
+                email_from_home_page = cells[4].text
                 id = cells[0].find_element_by_tag_name("input").get_attribute("value")
                 all_phones = cells[5].text
 
